@@ -58,20 +58,14 @@ jobs:
         uses: actions/configure-pages@v5
         working-directory: ./ui
         with:
-          # Automatically inject basePath in your Next.js configuration file and disable
-          # server side image optimization (https://nextjs.org/docs/api-reference/next/image#unoptimized).
-          #
-          # You may remove this line if you want to manage the configuration yourself.
           static_site_generator: next
       - name: Restore cache
         uses: actions/cache@v4
-        working-directory: ./frontend
+        working-directory: ./ui
         with:
           path: |
             .next/cache
-          # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
@@ -80,11 +74,14 @@ jobs:
       - name: Build with Next.js
         working-directory: ./ui
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+      - name: Export with Next.js
+        working-directory: ./ui
+        run: ${{ steps.detect-package-manager.outputs.runner }} next export
       - name: Upload artifact
         working-directory: ./ui
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: ./ui/out
 
   # Deployment job
   deploy:
